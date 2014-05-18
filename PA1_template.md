@@ -148,3 +148,57 @@ sort(table(round(completetotalsteps$totalSteps)), decreasing = TRUE)
 ```
 
 ## Are there differences in activity patterns between weekdays and weekends?
+To determine if there are differences in activity patterns between weekdays and weekends, we first add a new factor variable to the data indicating whether the date for each observation is a weekday or weekend.
+
+```r
+completedata$dayType <- as.factor(weekdays(as.Date(completedata$date)) %in% 
+    c("Saturday", "Sunday"))
+levels(completedata$dayType) <- c("weekday", "weekend")
+summary(completedata$dayType)
+```
+
+```
+## weekday weekend 
+##   12960    4608
+```
+
+Let's make a panel plot of the time series of mean number of steps by interval, separating weekday from weekend data.
+
+```r
+library(ggplot2)
+head(completedata, 10)
+```
+
+```
+##      steps       date interval dayType
+## 1  1.71698 2012-10-01        0 weekday
+## 2  0.33962 2012-10-01        5 weekday
+## 3  0.13208 2012-10-01       10 weekday
+## 4  0.15094 2012-10-01       15 weekday
+## 5  0.07547 2012-10-01       20 weekday
+## 6  2.09434 2012-10-01       25 weekday
+## 7  0.52830 2012-10-01       30 weekday
+## 8  0.86792 2012-10-01       35 weekday
+## 9  0.00000 2012-10-01       40 weekday
+## 10 1.47170 2012-10-01       45 weekday
+```
+
+```r
+meanStepsByWeekdayVsWeekend <- aggregate(completedata$steps, by = list(completedata$interval, 
+    completedata$dayType), mean)
+names(meanStepsByWeekdayVsWeekend) <- c("interval", "dayType", "meanSteps")
+qplot(interval, meanSteps, data = meanStepsByWeekdayVsWeekend, facets = . ~ 
+    dayType, geom = "line", xlab = "Interval", ylab = "Number of steps")
+```
+
+![plot of chunk unnamed-chunk-12](figure/unnamed-chunk-12.png) 
+
+From the time series plots above, it appears that on weekdays, there is a spike in the number of steps just before and around 9:00AM, which may perhaps be when the anonymous subject goes to work (maybe he/she goes for a run before work on weekdays). Similarly, there is a relatively suppressed number of steps during the actual workday, assuming it goes from about 9:00AM to about 5:00PM. The profile of the number of steps by interval on weekends appears flatter. I will plot smoothed versions of these time series plots below to make these observations a bit more obvious.
+
+```r
+qplot(interval, meanSteps, data = meanStepsByWeekdayVsWeekend, geom = "smooth", 
+    color = dayType, method = "loess", xlab = "Interval", ylab = "Number of steps")
+```
+
+![plot of chunk unnamed-chunk-13](figure/unnamed-chunk-13.png) 
+
