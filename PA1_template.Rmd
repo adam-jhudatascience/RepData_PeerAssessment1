@@ -37,7 +37,14 @@ meanstepsbyinterval[meanstepsbyinterval$meanStepsByInterval==max(meanstepsbyinte
 ```
 So, the most activity is in the interval from 8:35AM-8:40AM, when the person takes on average 206.2 steps.
 ## Imputing missing values
+Let's figure out the total number of intervals for which the number of steps is missing (i.e. the number of rows with NAs).
+```{r}
+nrow(pa1data[!complete.cases(pa1data),])
+```
+That's a lot of missing data! Let's create a new dataset that replaces all of the NAs with the corresponding mean value for the interval in question, averaged over all days.
 
-
-
+```{r}
+completedata <- pa1data
+completedata[is.na(completedata$steps),"steps"] <- meanstepsbyinterval[match(completedata[is.na(completedata$steps),"interval"],meanstepsbyinterval$interval),"meanStepsByInterval"]
+```
 ## Are there differences in activity patterns between weekdays and weekends?

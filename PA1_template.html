@@ -250,6 +250,21 @@ plot(meanstepsbyinterval$interval, meanstepsbyinterval$meanStepsByInterval,
 
 <h2>Imputing missing values</h2>
 
+<p>Let&#39;s figure out the total number of intervals for which the number of steps is missing (i.e. the number of rows with NAs).</p>
+
+<pre><code class="r">nrow(pa1data[!complete.cases(pa1data), ])
+</code></pre>
+
+<pre><code>## [1] 2304
+</code></pre>
+
+<p>That&#39;s a lot of missing data! Let&#39;s create a new dataset that replaces all of the NAs with the corresponding mean value for the interval in question, averaged over all days.</p>
+
+<pre><code class="r">completedata &lt;- pa1data
+completedata[is.na(completedata$steps), &quot;steps&quot;] &lt;- meanstepsbyinterval[match(completedata[is.na(completedata$steps), 
+    &quot;interval&quot;], meanstepsbyinterval$interval), &quot;meanStepsByInterval&quot;]
+</code></pre>
+
 <h2>Are there differences in activity patterns between weekdays and weekends?</h2>
 
 </body>
