@@ -31,7 +31,7 @@ hist(totalsteps$totalSteps, xlab = "Total steps", main = "", breaks = seq(0,
 
 ![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2.png) 
 
-Now, calculate the mean total number of steps taken per day using the aggregated data produced for the histogram.
+Now, calculate the mean and median total number of steps taken per day using the aggregated data produced for the histogram.
 
 ```r
 mean(totalsteps$totalSteps, na.rm = TRUE)
@@ -42,10 +42,42 @@ mean(totalsteps$totalSteps, na.rm = TRUE)
 ```
 
 
+
+```r
+median(totalsteps$totalSteps, na.rm = TRUE)
+```
+
+```
+## [1] 10395
+```
+
+
 ## What is the average daily activity pattern?
+First, make a time series plot of the mean number of steps taken by interval (averaged over all days for that interval, with missing values removed).
 
+```r
+meanstepsbyinterval <- aggregate(pa1data$steps, by = list(pa1data$interval), 
+    mean, na.rm = TRUE)
+names(meanstepsbyinterval) <- c("interval", "meanStepsByInterval")
+plot(meanstepsbyinterval$interval, meanstepsbyinterval$meanStepsByInterval, 
+    type = "l", xlab = "Interval", ylab = "Mean steps taken", main = "Daily Activity Pattern")
+```
 
+![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5.png) 
 
+It looks like on average the most activity is in one of the intervals between 5:00AM and 10:00AM. Let's find out exactly which.
+
+```r
+meanstepsbyinterval[meanstepsbyinterval$meanStepsByInterval == max(meanstepsbyinterval$meanStepsByInterval), 
+    ]
+```
+
+```
+##     interval meanStepsByInterval
+## 104      835               206.2
+```
+
+So, the most activity is in the interval from 8:35AM-8:40AM, when the person takes on average 206.2 steps.
 ## Imputing missing values
 
 
