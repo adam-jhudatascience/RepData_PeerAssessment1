@@ -47,4 +47,17 @@ That's a lot of missing data! Let's create a new dataset that replaces all of th
 completedata <- pa1data
 completedata[is.na(completedata$steps),"steps"] <- meanstepsbyinterval[match(completedata[is.na(completedata$steps),"interval"],meanstepsbyinterval$interval),"meanStepsByInterval"]
 ```
+Okay, now just like we did with the original data, we plot a histogram of the total number of steps taken in a day, and calculate the mean and median as well.
+```{r, fig.width=8, fig.height=8}
+completetotalsteps <- aggregate(completedata$steps,by=list(completedata$date),sum)
+names(completetotalsteps) <- c("date", "totalSteps")
+hist(completetotalsteps$totalSteps, xlab="Total steps", main="",breaks=seq(0,floor(max(completetotalsteps$totalSteps)/1000+1)*1000,1000))
+m <- mean(completetotalsteps$totalSteps)
+m
+median(completetotalsteps$totalSteps)
+```
+So now, both the mean and median have increased from their previous values. As for the histogram, the frequency of the 0-1000 bin has noticeably decreased, and the frequency of the 10000-11000 bin has noticeably increased. The main reason for this is my choice to replace the NAs in the original data with the means for the same interval averaged over all days where a count was reported. A consequence of this is that for days where previously all of the step counts were NAs, the new step counts are equal to the sum of the interval means over all intervals, which is the same as the overall mean (`r format(m,digits=5)` when rounded to the nearest integer). The table below indicates the prevalence of the step count `r format(m,digits=5)` in the rounded data.
+```{r}
+sort(table(round(completetotalsteps$totalSteps)),decreasing=TRUE)
+```
 ## Are there differences in activity patterns between weekdays and weekends?

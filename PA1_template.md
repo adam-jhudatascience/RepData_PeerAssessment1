@@ -98,4 +98,53 @@ completedata[is.na(completedata$steps), "steps"] <- meanstepsbyinterval[match(co
     "interval"], meanstepsbyinterval$interval), "meanStepsByInterval"]
 ```
 
+Okay, now just like we did with the original data, we plot a histogram of the total number of steps taken in a day, and calculate the mean and median as well.
+
+```r
+completetotalsteps <- aggregate(completedata$steps, by = list(completedata$date), 
+    sum)
+names(completetotalsteps) <- c("date", "totalSteps")
+hist(completetotalsteps$totalSteps, xlab = "Total steps", main = "", breaks = seq(0, 
+    floor(max(completetotalsteps$totalSteps)/1000 + 1) * 1000, 1000))
+```
+
+![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9.png) 
+
+```r
+m <- mean(completetotalsteps$totalSteps)
+m
+```
+
+```
+## [1] 10766
+```
+
+```r
+median(completetotalsteps$totalSteps)
+```
+
+```
+## [1] 10766
+```
+
+So now, both the mean and median have increased from their previous values. As for the histogram, the frequency of the 0-1000 bin has noticeably decreased, and the frequency of the 10000-11000 bin has noticeably increased. The main reason for this is my choice to replace the NAs in the original data with the means for the same interval averaged over all days where a count was reported. A consequence of this is that for days where previously all of the step counts were NAs, the new step counts are equal to the sum of the interval means over all intervals, which is the same as the overall mean (10766 when rounded to the nearest integer). The table below indicates the prevalence of the step count 10766 in the rounded data.
+
+```r
+sort(table(round(completetotalsteps$totalSteps)), decreasing = TRUE)
+```
+
+```
+## 
+## 10766    41   126  2492  3219  4472  5018  5441  6778  7047  7336  8334 
+##     8     1     1     1     1     1     1     1     1     1     1     1 
+##  8355  8821  8841  8918  9819  9900 10056 10119 10139 10183 10304 10395 
+##     1     1     1     1     1     1     1     1     1     1     1     1 
+## 10439 10571 10600 10765 11015 11162 11352 11458 11829 11834 12116 12426 
+##     1     1     1     1     1     1     1     1     1     1     1     1 
+## 12608 12787 12811 12883 13294 13452 13460 13646 14339 14478 15084 15098 
+##     1     1     1     1     1     1     1     1     1     1     1     1 
+## 15110 15414 15420 17382 20427 21194 
+##     1     1     1     1     1     1
+```
+
 ## Are there differences in activity patterns between weekdays and weekends?
